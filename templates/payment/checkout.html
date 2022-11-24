@@ -1,0 +1,404 @@
+{% extends 'shop_app/base.html' %}
+{% load static %}
+{% load mathfilters %}
+
+{% block content %}
+<style type="text/css">
+    .container-fluid {
+        margin-top: 70px;
+    }
+
+    .card-body {
+        -ms-flex: 1 1 auto;
+        flex: 1 1 auto;
+        padding: 1.40rem
+    }
+
+    .img-sm {
+        width: 80px;
+        height: 80px
+    }
+
+    .itemside .info {
+        padding-left: 15px;
+        padding-right: 7px
+    }
+
+    .table-shopping-cart .price-wrap {
+        line-height: 1.2
+    }
+
+    .table-shopping-cart .price {
+        font-weight: bold;
+        margin-right: 5px;
+        display: block
+    }
+
+    .text-muted {
+        color: #969696 !important
+    }
+
+    a {
+        text-decoration: none !important
+    }
+
+    .card {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        min-width: 0;
+        word-wrap: break-word;
+        background-color: #fff;
+        background-clip: border-box;
+        border: 1px solid rgba(0, 0, 0, .125);
+        border-radius: 0px;
+    }
+
+    .itemside {
+        position: relative;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        width: 100%
+    }
+
+    .dlist-align {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex
+    }
+
+    [class*="dlist-"] {
+        margin-bottom: 5px
+    }
+
+    .coupon {
+        border-radius: 1px
+    }
+
+    .price {
+        font-weight: 600;
+        color: #212529
+    }
+
+    .btn.btn-out {
+        outline: 1px solid #fff;
+        outline-offset: -5px
+    }
+
+    .btn-main {
+        border-radius: 2px;
+        text-transform: capitalize;
+        font-size: 15px;
+        padding: 10px 19px;
+        cursor: pointer;
+        color: #fff;
+        width: 100%
+    }
+
+    .btn-light {
+        color: #ffffff;
+        background-color: #F44336;
+        border-color: #f8f9fa;
+        font-size: 12px
+    }
+
+    .btn-light:hover {
+        color: #ffffff;
+        background-color: #F44336;
+        border-color: #F44336
+    }
+
+    .btn-apply {
+        font-size: 11px
+    }
+
+    .address-container {
+        display: inline-block;
+        margin: 10px;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+    .address-container .radio {
+        background-color: white;
+        display: inline-block;
+        cursor: pointer;
+        padding: 10px;
+    }
+
+    .address-container input[type=radio] {
+        display: none;
+    }
+
+    .address-container input[type=radio]:checked+.radio {
+        background-color: #f3f1f1;
+        border: 1px solid grey
+    }
+
+    .payment-container {
+        display: inline-block;
+        margin: 10px;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+    .payment-container .radio {
+        background-color: white;
+        display: inline-block;
+        cursor: pointer;
+        padding: 10px;
+    }
+
+    .payment-container input[type=radio] {
+        display: none;
+    }
+
+    .payment-container input[type=radio]:checked+.radio {
+        background-color: #f3f1f1;
+        border: 1px solid grey
+    }
+</style>
+
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-2">
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table table-borderless table-shopping-cart">
+                        {% if total_price == 0 %}
+                        <h2 style="text-align: center; padding-top: 15px;">Nothing there</h2>
+                        {% else %}
+                        <h1 style="text-align: center; margin: 5px;">Your order</h1>
+                        <hr>
+                        {% if coupon_applied %}
+                        <h3 style="text-align: center; margin: 5px;">Total: ${{price_after_discount}}</h3>
+                        <h5 style="text-align: center; margin: 5px;">-{{d}}% code: {{coupon}}</h5>
+                        {% else %}
+                        <h3 style="text-align: center; margin: 5px;">Total: ${{price_after_discount}}</h3>
+                        {% endif %}
+                        <hr>
+                        <thead class="text-muted">
+                            <tr class="small text-uppercase">
+                                <th scope="col">Product</th>
+                                <th scope="col" width="120">Quantity</th>
+                                <th scope="col" width="120">Price</th>
+                                <th scope="col" class="text-right d-none d-md-block" width="200"></th>
+                            </tr>
+
+                        </thead>
+                        {% endif %}
+                        <tbody>
+                            {% for product in paginated %}
+                            <tr>
+                                <td>
+                                    <figure class="itemside align-items-center">
+                                        <div class="aside"><img src="{{product.product.product.main_image.url}}"
+                                                style="width: 100px; height:100px;"></div>
+                                        <figcaption class="info"> <a href="#" class="title text-dark"
+                                                data-abc="true">{{product}}</a>
+                                            <p class="text-muted small" style="text-align: left;">SIZE: {{product.size}}
+                                            </p>
+                                            <p class="text-muted small" style="text-align: left;">COLOR:
+                                                {{product.color}}</p>
+                                        </figcaption>
+                                    </figure>
+                                </td>
+                                <td>
+                                    <p>{{product.quantity}}</p>
+                                </td>
+                                <td>
+                                    <div class="price-wrap"> <var
+                                            class="price">${{product.product.product.price|mul:product.quantity}}</var>
+                                        <small class="text-muted"> ${{product.product.product.price}} each </small>
+                                    </div>
+                                </td>
+
+                            </tr>
+                            {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!--Current page number / usage in js to highlight number in pagination-->
+            <p id="paginated_number" style="display:none;">{{current_number}}</p>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12 d-flex justify-content-center" style="padding-top: 15px;">
+                        <nav>
+                            <ul class="pagination">
+                                {% if paginated.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1">&laquo First</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{paginated.previous_page_number}}">Previous</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#">&laquo First</a>
+                                </li>
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#">Previous</a>
+                                </li>
+                                {% endif %}
+
+                                <!--Display numbers of pages-->
+                                {% for i in page_numbers %}
+                                <li class="page-item" id="{{forloop.counter}}"><a class="page-link"
+                                        href="?page={{forloop.counter}}">
+                                        {{forloop.counter}}</a>
+                                </li>
+                                {% endfor %}
+
+                                {% if paginated.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{paginated.next_page_number}}">Next</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{paginated.paginator.num_pages}}">Last &raquo</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#">Next</a>
+                                </li>
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#">Last &raquo</a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+        </div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-8">
+                    <div class="card">
+                        <div>
+                            <h1 style="text-align: center; margin: 5px;">Delivery address</h1>
+                            <p style="color:red; display: none;" id="addressValidator">Please choose delivery address
+                            </p>
+                            <hr>
+                            <p style="display: none;" id="addressIdInput"></p>
+                        </div>
+                        <div style="text-align: center;">
+                            <form>
+                                {% if addresses %}
+                                {% for address in addresses %}
+                                <div class="address-container" onclick="addressInput('{{address.id}}')">
+
+                                    <input type="radio" name="o1" value="" id="{{address.id}}">
+                                    <label class="radio" for="{{address.id}}">
+                                        <strong>{{address.country}}</strong>
+                                        <p style="padding-left: 10px;">{{address.address1}}, {{address.address2}}</p>
+                                        <p> {{address.city}}, <strong>Post code:</strong> {{address.zip_code}}</p>
+                                    </label>
+                                </div>
+
+
+                                {% endfor %}
+                                {% else %}
+                                <a href="{% url 'account:address' user_id=request.user.id %}"><button type="button"
+                                        class="btn btn-outline-primary button" style="margin-bottom:15px">
+                                        + Add address <i class="material-icons" style="font-size:15px">home</i>
+                                    </button></a>
+                                {% endif %}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid" style="padding-bottom: 100px;">
+            <div class="row">
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-8">
+                    <div class="card" style=" display: inline-block; width: 100%;">
+                        <div style="text-align: center;">
+                            <h1 style="text-align: center; margin: 5px;">Choose payment method</h1>
+                            <p style="color:red; display: none;" id="paymentValidator">Please choose payment method</p>
+                            <hr>
+                            <p id="paymentMethod" style="display: none;"></p>
+                            <div class="payment-container">
+                                <input type="radio" name="o1" id="card">
+                                <label class="radio" for="card" onclick="paymentMethodInput('card')">
+                                    <h4>Card</h4>
+                                </label>
+
+                            </div>
+
+                        </div>
+                        <div style="width:100%; text-align:center; margin-bottom: 15px">
+                            <hr>
+                            <button onclick="history.back()"
+                                style="width: 100px; height:50px; border: 1px solid black;">Back</button>
+                            <button style="width: 100px; height:50px; border: 1px solid black;"
+                                onclick="urlBuilder()">Next</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Add value to hiden element 
+    function addressInput(id) {
+        document.getElementById('addressIdInput').value = id
+        console.log(id)
+    }
+
+    // Add value to hiden element
+    function paymentMethodInput(method) {
+        document.getElementById('paymentMethod').value = method
+        console.log(method)
+    }
+
+    // Build url and redirect
+    function urlBuilder() {
+
+        let address = document.getElementById('addressIdInput').value
+        let paymentMethod = document.getElementById('paymentMethod').value
+        let addressValidator = document.getElementById('addressValidator')
+        let paymentValidator = document.getElementById('paymentValidator')
+
+        if (address == undefined) {
+            addressValidator.style.display = 'block';
+        } else {
+            addressValidator.style.display = 'none';
+        }
+
+        if (paymentMethod == undefined) {
+            paymentValidator.style.display = 'block';
+        } else {
+            paymentValidator.style.display = 'none';
+        }
+
+        if (address && paymentMethod) {
+            window.location.replace(`/payment/payment/${address}/${paymentMethod}`)
+        }
+
+    }
+</script>
+
+{% include 'account/snippets/set_counter.html' %}
+
+{% endblock %}

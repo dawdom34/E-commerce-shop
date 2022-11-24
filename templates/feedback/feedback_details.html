@@ -1,0 +1,59 @@
+{% extends 'shop_app/base.html' %}
+
+{% block content %}
+
+<style type="text/css">
+    #user-info {
+        margin-top: 10px;
+    }
+
+    .header {
+        font-weight: 1000;
+        text-align: left;
+        font-size: medium;
+    }
+
+    .content {
+        text-align: left;
+    }
+
+    #message-content {
+        overflow-wrap: break-word;
+    }
+</style>
+
+
+<div class="container-fluid" style="padding-top: 100px;">
+    <div class="row">
+        <div class="col-md-3">
+        </div>
+        <div class="col-md-6" style="background-color: white;">
+            <div id="user-info">
+                <p class="header">Sender:</p>
+                <p class="content"> {{message.user}} | {{message.user.email}}</p>
+            </div>
+            <hr>
+            <div id="message-content">
+                <p class="header">Category:</p>
+                <p class="content"> {{message.subject}}</p>
+                <hr>
+                <p class="header">Message:</p>
+                <p class="content"> {{message.message}}</p>
+            </div>
+            <hr>
+            <button type="button" class="btn btn-outline-success" style="margin-bottom: 15px;"
+                onclick="markAsComplete('{{message.id}}', '{{message.subject}}')">
+                Mark as complete
+            </button>
+        </div>
+        <div class="col-md-3">
+        </div>
+    </div>
+</div>
+<script>
+    function uiUpdateFunction() {
+        window.location.reload
+    }
+</script>
+{% include 'feedback/snippets/mark_as_complete.html'%}
+{% endblock %}

@@ -1,0 +1,32 @@
+<script type="text/javascript">
+	function removeProduct(id, uiUpdateFunction){
+		console.log(id)
+		payload = {
+			"csrfmiddlewaretoken": "{{ csrf_token }}",
+			"product_id": id,
+		}
+		$.ajax({
+			type: 'POST',
+			dataType: "json",
+			url: "{% url 'account:cart_remove_product' %}",
+			data: payload,
+			timeout: 5000,
+			success: function(data) {
+				console.log("SUCCESS", data)
+				if(data['response'] == "Product deleted."){
+					// ui is updated
+				}
+				else if(data['response'] != null){
+					alert(data['response'])
+				}
+			},
+			error: function(data) {
+				console.error("ERROR...", data)
+				//alert("Something went wrong.")
+			},
+			complete: function(data){
+				uiUpdateFunction()
+			}
+		});
+	}
+</script>

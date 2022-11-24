@@ -1,0 +1,10 @@
+[run]
+source = account/,coupons/,product/,management/,feedback/,
+omit=
+    venv
+    */migrations/*
+    */tests/*
+    *__init__.py
+    */backends.py
+exclude_lines = 
+    pragma: no cover

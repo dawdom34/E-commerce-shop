@@ -1,0 +1,68 @@
+{% extends 'shop_app/base.html' %}
+
+{% block content %}
+
+<div class="container-fluid" style="margin-top: 100px;">
+	<div class="row">
+		<div class="col-md-4">
+		</div>
+		<div class="col-md-4">
+			<form role="form" method="post">{% csrf_token %}
+				<div class="form-group">
+					<label for="InputEmail">
+						Email address
+					</label>
+					<input type="email" class="form-control" id="InputEmail" name="email" required autofocus
+						value="{{form.initial.email}}" />
+				</div>
+				<div class="form-group">
+					<label for="InputName">
+						Name
+					</label>
+					<input type="text" class="form-control" id="InputName" name="name" required
+						value="{{form.initial.name}}" />
+				</div>
+				<div class="form-group">
+					<label for="InputSurname">
+						Surname
+					</label>
+					<input type="text" class="form-control" id="InputSurname" name="surname" required
+						value="{{form.initial.surname}}" />
+				</div>
+				<div class="form-group">
+					<label for="InputSurname">
+						Phone number
+					</label>
+					<input type="tel" class="form-control" id="InputPhone" name="phone_number"
+						placeholder="XX XXX-XXX-XXX" required value="{{form.initial.phone_number}}" />
+				</div>
+
+				{% for field in form %}
+				<p>
+					{% for error in field.errors %}
+					<p style="color: red">{{ error }}</p>
+					{% endfor %}
+				</p>
+				{% endfor %}
+				{% if form.non_field_errors %}
+				<div style="color: red">
+					<p>{{form.non_field_errors}}</p>
+				</div>
+
+				{% endif %}
+				<button type="submit" class="btn btn-block btn-outline-success">
+					Save
+				</button>
+			</form>
+			<a href="{% url 'password_change' %}"><button type="button" class="btn btn-block btn-md btn-outline-info"
+					style="margin-top: 15px">
+					Change password
+				</button></a>
+		</div>
+		<div class="col-md-4">
+		</div>
+	</div>
+</div>
+
+{% include 'account/snippets/set_counter.html' %}
+{% endblock %}

@@ -1,0 +1,294 @@
+{% extends 'shop_app/base.html' %}
+{% load static %}
+{% load mathfilters %}
+{% block content %}
+<style type="text/css">
+    .container-fluid {
+        margin-top: 70px
+    }
+
+    .card-body {
+        -ms-flex: 1 1 auto;
+        flex: 1 1 auto;
+        padding: 1.40rem
+    }
+
+    .img-sm {
+        width: 80px;
+        height: 80px
+    }
+
+    .itemside .info {
+        padding-left: 15px;
+        padding-right: 7px
+    }
+
+    .table-shopping-cart .price-wrap {
+        line-height: 1.2
+    }
+
+    .table-shopping-cart .price {
+        font-weight: bold;
+        margin-right: 5px;
+        display: block
+    }
+
+    .text-muted {
+        color: #969696 !important
+    }
+
+    a {
+        text-decoration: none !important
+    }
+
+    .card {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        min-width: 0;
+        word-wrap: break-word;
+        background-color: #fff;
+        background-clip: border-box;
+        border: 1px solid rgba(0, 0, 0, .125);
+        border-radius: 0px
+    }
+
+    .itemside {
+        position: relative;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        width: 100%
+    }
+
+    .dlist-align {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex
+    }
+
+    [class*="dlist-"] {
+        margin-bottom: 5px
+    }
+
+    .coupon {
+        border-radius: 1px
+    }
+
+    .price {
+        font-weight: 600;
+        color: #212529
+    }
+
+    .btn.btn-out {
+        outline: 1px solid #fff;
+        outline-offset: -5px
+    }
+
+    .btn-main {
+        border-radius: 2px;
+        text-transform: capitalize;
+        font-size: 15px;
+        padding: 10px 19px;
+        cursor: pointer;
+        color: #fff;
+        width: 100%
+    }
+
+    .btn-light {
+        color: #ffffff;
+        background-color: #F44336;
+        border-color: #f8f9fa;
+        font-size: 12px
+    }
+
+    .btn-light:hover {
+        color: #ffffff;
+        background-color: #F44336;
+        border-color: #F44336
+    }
+
+    .btn-apply {
+        font-size: 11px
+    }
+</style>
+<div class="container-fluid">
+    <div class="row">
+        <aside class="col-lg-9">
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table table-borderless table-shopping-cart">
+                        {% if total_price == 0 %}
+                        <h2 style="text-align: center; padding-top: 15px;">Nothing there</h2>
+                        {% else %}
+                        <thead class="text-muted">
+                            <tr class="small text-uppercase">
+                                <th scope="col">Product</th>
+                                <th scope="col" width="120">Quantity</th>
+                                <th scope="col" width="120">Price</th>
+                                <th scope="col" width="120">Size</th>
+                                <th scope="col" width="120">Color</th>
+                                {% if status == 1%}
+                                <th scope="col" width="120">Check</th>
+                                {% endif %}
+                                <th scope="col" class="text-right d-none d-md-block" width="200"></th>
+                            </tr>
+
+                        </thead>
+                        {% endif %}
+                        <tbody>
+                            {% for product in paginated %}
+                            <tr>
+                                <td>
+                                    <figure class="itemside align-items-center">
+                                        <div class="aside"><img src="{{product.product.product.main_image.url}}"
+                                                style="width: 100px; height:100px;"></div>
+                                        <figcaption class="info"> <a href="#" class="title text-dark"
+                                                data-abc="true">{{product}}</a>
+
+                                        </figcaption>
+                                    </figure>
+                                </td>
+                                <td>
+                                    <p>{{product.quantity}}</p>
+                                </td>
+                                <td>
+                                    <div class="price-wrap"> <var
+                                            class="price">${{product.product.product.price|mul:product.quantity}}</var>
+                                        <small class="text-muted"> ${{product.product.product.price}} each </small>
+                                    </div>
+                                </td>
+                                <td>
+                                    {{product.size}}
+                                </td>
+                                <td>
+                                    {{product.color}}
+                                </td>
+                                {% if status == 1 %}
+                                <td>
+                                    <input type="checkbox" style="width: 30px; height:30px">
+                                </td>
+                                {% endif %}
+
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12 d-flex justify-content-center" style="padding-top: 15px;">
+                                <nav>
+                                    <ul class="pagination">
+                                        {% if paginated.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=1">&laquo First</a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                                href="?page={{paginated.previous_page_number}}">Previous</a>
+                                        </li>
+                                        {% else %}
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#">&laquo First</a>
+                                        </li>
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#">Previous</a>
+                                        </li>
+                                        {% endif %}
+                                        {% if pagineted.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{paginated.next_page_number}}">Next</a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{paginated.paginator.num_pages}}">Last
+                                                &raquo</a>
+                                        </li>
+                                        {% else %}
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#">Next</a>
+                                        </li>
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#">Last &raquo</a>
+                                        </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        <aside class="col-lg-3">
+            <div class="card">
+                <div class="card-body">
+                    <dl class="dlist-align">
+                        <dt>Delivery address:</dt>
+                        <dd class="text-center text-dark b ml-3">
+                            {{order.address.country}} {{order.address.city}} <br>{{order.address.address1}}
+                            {{order.address.address2}} <br> {{order.address.zip_code}}
+                        </dd>
+                    </dl>
+                    <hr>
+                    <dl class="dlist-body">
+                        <dt>Customer information:</dt>
+                        <dd class="text-center text-dart b ml-3">
+                            {{order.user}}<br>{{order.user.phone_number}}<br>{{order.user.email}}
+                        </dd>
+                    </dl>
+
+                    {% if status != 4 %}
+                    <hr>
+                    <dl class="dlist-body">
+                        <dt>Options</dt>
+                        <dd class="text-center text-dark b ml-3">
+                            {% if status == 1 %}
+                            <button type="button" class="btn btn-outline-info btn-lg"
+                                onclick="triggerSetNewStatus('Waiting for shipment')">
+                                Mark as "Waiting for shipment"
+                            </button>
+                            {% elif status == 2 %}
+                            <button type="button" class="btn btn-outline-info btn-lg"
+                                onclick="triggerSetNewStatus('Shipped')">
+                                Mark as "Shipped"
+                            </button>
+                            {% elif status == 3 %}
+                            <button type="button" class="btn btn-outline-info btn-lg"
+                                onclick="triggerSetNewStatus('Delivered')">
+                                Mark as "Delivered"
+                            </button>
+                            {% endif %}
+                        </dd>
+                    </dl>
+                    {% endif %}
+
+                    </table>
+                    </dl>
+
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+<script>
+    function triggerSetNewStatus(new_status) {
+        setNewStatus('{{order.id}}', new_status)
+        console.log('{{status}}')
+        if ('{{status}}' == '1') {
+            window.location.replace('/management/orders/collecting_an_items/')
+        } else if ('{{status}}' == '2') {
+            window.location.replace('/management/orders/waiting_for_shipment/')
+        } else if ('{{status}}' == '3') {
+            window.location.replace('/management/orders/shipped/')
+        } else {
+            console.log('ERROR')
+        }
+
+    }
+</script>
+
+{% include 'management/snippets/set_new_status.html' %}
+
+{% endblock %}

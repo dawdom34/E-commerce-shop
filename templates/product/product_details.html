@@ -1,0 +1,557 @@
+{% extends 'shop_app/base.html'%}
+{% load static %}
+{% block content %}
+
+<style type="text/css">
+	.btn:focus,
+	.btn:active,
+	button:focus,
+	button:active {
+		outline: none !important;
+		box-shadow: none !important;
+	}
+
+	#image-gallery .modal-footer {
+		display: block;
+	}
+
+	.thumb {
+		margin-top: 15px;
+		margin-bottom: 15px;
+	}
+
+	.star {
+		display: inline-block;
+	}
+
+	.checked {
+		color: orange;
+	}
+
+	#sizes {
+		display: inline-block;
+		border: 1px solid grey;
+		margin: 1px;
+		width: 35px;
+	}
+
+	#colors {
+		display: inline-block;
+		margin: 1px;
+		border: 1px solid grey;
+		width: 40px;
+		height: 20px;
+	}
+
+	#description {
+		text-align: left;
+	}
+
+	.rating {
+		display: flex;
+		flex-direction: row-reverse;
+		justify-content: center
+	}
+
+	.rating>input {
+		display: none
+	}
+
+	.rating>label {
+		position: relative;
+		width: 1em;
+		font-size: 30px;
+		font-weight: 300;
+		color: orange;
+		cursor: pointer
+	}
+
+	.rating>label::before {
+		content: "\2605";
+		position: absolute;
+		opacity: 0
+	}
+
+	.rating>label:hover:before,
+	.rating>label:hover~label:before {
+		opacity: 1 !important
+	}
+
+	.rating>input:checked~label:before {
+		opacity: 1
+	}
+
+	.rating:hover>input:checked~label:before {
+		opacity: 0.4
+	}
+
+
+
+
+
+	.rating-submit {
+		border-radius: 15px;
+		color: #fff;
+		height: 49px;
+	}
+
+
+	.rating-submit:hover {
+
+		color: #fff;
+	}
+</style>
+
+
+<div class="container-fluid" style="padding-top: 100px;">
+	<div class="row">
+		<div class="col-md-2">
+		</div>
+		<div class="col-md-8 shadow" style="background-color: white;">
+			<div class="row">
+				<div class="col-md-4">
+					<img alt="Bootstrap Image Preview" style="width: 300px; padding-top:15px ;"
+						src="{{product.product.main_image.url}}" />
+				</div>
+				<div class="col-md-8">
+					<h3 class="text-left" style="padding-top: 15px;">
+						{{product.product.name}}
+					</h3>
+					<dl>
+						<dt style="height: 10px;">
+							Reviews: {{rev|length}}
+						</dt>
+						<dd style="font-size: 30px; height: 30px;">
+							{% if stars == 'No data'%}
+								<p class="star">⋆</p>
+								<p class="star">⋆</p>
+								<p class="star">⋆</p>
+								<p class="star">⋆</p>
+								<p class="star">⋆</p>
+							{% else %}
+								{% for x in stars.0 %}
+								<p class="star checked">⋆</p>
+								{% endfor %}
+								{% for x in stars.1 %}
+								<p class="star">⋆</p>
+								{% endfor %}
+							{% endif %}
+
+						</dd>
+						<dt>
+							Description
+						</dt>
+						<dd>
+							<p id="description">{{product.product.description}}</p>
+						</dd>
+						<dt>
+							Aviable sizes
+						</dt>
+						<dd>
+							{% for x in product.sizes.all %}
+							<p id="sizes">{{x.size}}</p>
+							{% endfor %}
+						</dd>
+						<dt>Aviable colors</dt>
+						<dd>
+							{% for x in product.colors.all %}
+							<p id="colors" style="background-color: {{x.color}}"></p>
+							{% endfor %}
+						</dd>
+						<dt>
+							Composition
+						</dt>
+						<dd>
+							{{product.product.composition}}
+						</dd>
+						<dt>
+							Price
+						</dt>
+						<dd>
+							${{product.product.price}}
+						</dd>
+
+					</dl>
+					{% if in_cart %}
+					<button class="btn btn-outline-danger" onclick="removeProduct('{{product.id}}', refresh)"><i
+							class="material-icons" style="font-size:20px;">delete</i>Delete from cart</button>
+					{% else %}
+
+					<div style=" padding-right: 10px; display: inline-block;">
+						<h7>Quantity:</h7>
+						<select id="quantity" class="form-control" style="width: 90px;">
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+						</select>
+					</div>
+					<div style="padding-right: 10px; display: inline-block;">
+						<h7>Size:</h7>
+						<select id="size" class="form-control" style="width: 90px;">
+							{% for x in product.sizes.all%}
+							<option value="{{x.size}}">{{x.size}}</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div style="padding-right: 10px; display:inline-block">
+						<h7>Color:</h7>
+						<select id="color" class="form-control" style="width: 100px;">
+							{% for x in product.colors.all %}
+							<option value="{{x.color}}">{{x.color}}</option>
+							{% endfor %}
+						</select>
+					</div>
+					<button id="product_add" class="btn btn-outline-success"
+						onclick="addProductTrigger(addProduct, refresh)"><i class="material-icons"
+							style="font-size:20px;">add_shopping_cart</i> Add to cart</button>
+
+					{% endif %}
+				</div>
+			</div>
+			<hr>
+			<div class="row" style="padding-top: 100px;">
+				<div class="col-md-12">
+					<h5 style="text-align: center;">Gallery</h5>
+
+					<div class="container" style="padding-top: 50px; padding-bottom:50px">
+						<div class="row">
+							<div class="row">
+								<div class="col-lg-3 col-md-4 col-xs-6 thumb">
+									<a class="thumbnail" href="#" data-image-id="" data-toggle="modal"
+										data-title="{{product.product.name}}"
+										data-image="{{product.product.image1.url}}" data-target="#image-gallery">
+										<img class="img-thumbnail" src="{{product.product.image1.url}}"
+											alt="product image" width="600" height="800">
+									</a>
+								</div>
+								<div class="col-lg-3 col-md-4 col-xs-6 thumb">
+									<a class="thumbnail" href="#" data-image-id="" data-toggle="modal"
+										data-title="{{product.product.name}}"
+										data-image="{{product.product.image2.url}}" data-target="#image-gallery">
+										<img class="img-thumbnail" src="{{product.product.image2.url}}"
+											alt="product image" width="600" height="800">
+									</a>
+								</div>
+								<div class="col-lg-3 col-md-4 col-xs-6 thumb">
+									<a class="thumbnail" href="#" data-image-id="" data-toggle="modal"
+										data-title="{{product.product.name}}"
+										data-image="{{product.product.image3.url}}" data-target="#image-gallery">
+										<img class="img-thumbnail" src="{{product.product.image3.url}}"
+											alt="product image" width="600" height="800">
+									</a>
+								</div>
+								<div class="col-lg-3 col-md-4 col-xs-6 thumb">
+									<a class="thumbnail" href="#" data-image-id="" data-toggle="modal"
+										data-title="{{product.product.name}}"
+										data-image="{{product.product.image4.url}}" data-target="#image-gallery">
+										<img class="img-thumbnail" src="{{product.product.image4.url}}"
+											alt="product image" width="600" height="800">
+									</a>
+								</div>
+
+							</div>
+
+
+							<div class="modal fade" id="image-gallery" tabindex="-1" role="dialog"
+								aria-labelledby="myModalLabel" aria-hidden="true">
+								<div class="modal-dialog modal-lg">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h4 class="modal-title" id="image-gallery-title"></h4>
+											<button type="button" class="close" data-dismiss="modal"><span
+													aria-hidden="true">×</span><span class="sr-only">Close</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<img id="image-gallery-image" class="img-responsive col-md-12" src="">
+										</div>
+										<div class="modal-footer">
+											<button type="button" class="btn btn-secondary float-left"
+												id="show-previous-image"><i class="fa fa-arrow-left"></i>
+											</button>
+
+											<button type="button" id="show-next-image"
+												class="btn btn-secondary float-right"><i class="fa fa-arrow-right"></i>
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<hr>
+
+				<div style="margin: auto; padding-top:100px">
+					<h5>Reviews</h5>
+				</div>
+				<div class="container-fluid" style="padding-top: 50px; padding-bottom:50px">
+					<div class="row">
+						<div class="col-md-1">
+						</div>
+						<div class="col-md-10 shadow">
+							{% if user_review %}
+							<div style="padding-top: 10px;">
+								<h6 style="text-align:center">Your review</h6>
+								<div style="text-align:center; font-size: 30px">
+									{% for x in user_review.1 %}
+									<p class="star checked">⋆</p>
+									{% endfor%}
+									{% for x in user_review.2 %}
+									<p class="star">⋆</p>
+									{% endfor %}
+								</div>
+								<p style="font-size: 15px; text-align:left; margin-left:30px ; word-wrap: break-word;">
+									{{user_review.0.review}}</p>
+								<button type="button" class="btn btn-outline-danger btn-block"
+									onclick="deleteProductReview('{{user_review.0.id}}', refresh)">
+									Delete review
+								</button>
+
+
+							</div>
+							<hr>
+							{% else %}
+							{% if request.user.is_authenticated %}
+							<textarea id="review" oninput="auto_grow(this)" rows="2" cols="100"
+								placeholder="Your review.."
+								style="width: 100%; margin-top: 19px; min-height: 50px;"></textarea>
+							<p style="color:red; display:none;" id="comment-validation">Your comment cannot be empty</p>
+							<div class="rating">
+								<div id="stars" style="display:none;"></div>
+								<input onclick="addReviewStars('5')" type="radio" name="rating" value="5" id="5"><label
+									for="5">☆</label>
+								<input onclick="addReviewStars('4')" type="radio" name="rating" value="4" id="4"><label
+									for="4">☆</label>
+								<input onclick="addReviewStars('3')" type="radio" name="rating" value="3" id="3"><label
+									for="3">☆</label>
+								<input onclick="addReviewStars('2')" type="radio" name="rating" value="2" id="2"><label
+									for="2">☆</label>
+								<input onclick="addReviewStars('1')" type="radio" name="rating" value="1" id="1"><label
+									for="1">☆</label>
+							</div>
+							<p style="color:red; display:none;" id="stars-validation">Your stars review cannot be empty
+							</p>
+							<button type="button" onclick="addProductReviewTrigger(addProductReview, refresh)"
+								class="btn btn-outline-success btn-md btn-block">
+								Add review
+							</button>
+							<hr>
+							{% endif %}
+							{% endif %}
+							{% if rev %}
+							{% for r in rev %}
+							<div class="review_tab">
+								<div style="display:inline-block;">
+									{% if r.0.user.gender == "Man" %}
+									<img src="{% static 'reviews-default-pictures/dummy-male.png' %}"
+										style="width: 50px; border-radius:50%; margin-top: 15px;">
+									{% else %}
+									<img src="{% static 'reviews-default-pictures/dummy-female.png' %}"
+										style="width: 50px; border-radius:50%; margin-top: 15px;">
+									{% endif %}
+								</div>
+								<div style="display: inline-block;">
+									<h9 style="font-weight: 900;">{{r.0.user.name}}</h9>
+									<p style="font-size: 10px; display:inline-block; margin-left:6px">
+										{{r.0.timestamp}}</p>
+								</div>
+								<div class="stars" style="display: inline-block; font-size: 20px; margin-left: 6px;">
+									{% for x in r.1 %}
+									<p class="star checked">⋆</p>
+									{% endfor%}
+									{% for x in r.2 %}
+									<p class="star">⋆</p>
+									{% endfor %}
+
+								</div>
+								<div>
+									<p
+										style="font-size: 15px; text-align:left; margin-left:30px ; word-wrap: break-word;">
+										{{r.0.review}}</p>
+								</div>
+							</div>
+							<hr>
+							{% endfor %}
+							{% else %}
+							<h5 style="text-align:center">No reviews</h5>
+							{% endif %}
+						</div>
+						<div class="col-md-1">
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		//Refresh page
+		function refresh() {
+			location.reload();
+		}
+
+		function sleep(ms) {
+			return new Promise(resolve => setTimeout(resolve, ms));
+		}
+
+		function showNotification(sleep) {
+			if (document.readyState) {
+				notification = document.getElementById('notification_success')
+				notification.style.display = 'block';
+				sleep(5000);
+				notification.style.display = 'none';
+			}
+		}
+
+		//Initiates the process of adding review to the product
+		function addProductReviewTrigger(addReview, refresh) {
+			let id = "{{product.id}}";
+			let review = document.getElementById('review').value;
+			let stars = document.getElementById('stars').value;
+			let comment_validation = document.getElementById('comment-validation')
+			let = stars_vlidation = document.getElementById('stars-validation')
+
+			// Checking if comment and stars rating are not empty
+			if (review == '') {
+				comment_validation.style.display = 'block';
+			} else if (stars == null) {
+				comment_validation.style.display = 'none';
+				stars_vlidation.style.display = 'block';
+			} else {
+				// If all validations passed, add review
+				addReview(id, review, stars, refresh)
+			}
+		}
+
+		//Add number of stars to hidden emlement
+		function addReviewStars(stars) {
+			console.log(stars)
+			document.getElementById('stars').value = stars
+		}
+
+
+		//Initiates the process of adding a product to the cart
+		function addProductTrigger(addProduct, refresh, showNotification) {
+			let id = "{{product.id}}";
+			let quantity = document.getElementById('quantity').value;
+			let color = document.getElementById('color').value;
+			let size = document.getElementById('size').value;
+			let user = "{{request.user.id}}"
+
+
+			addProduct(id, quantity, color, size, refresh, user)
+
+		}
+
+		//Review textarea auto height
+		function auto_grow(element) {
+			element.style.height = "5px";
+			element.style.height = (element.scrollHeight) + "px";
+		}
+
+
+
+		// Galery	
+		let modalId = $('#image-gallery');
+		$(document).ready(function () {
+			loadGallery(true, 'a.thumbnail');
+
+			//This function disables buttons when needed
+			function disableButtons(counter_max, counter_current) {
+				$('#show-previous-image, #show-next-image')
+					.show();
+				if (counter_max === counter_current) {
+					$('#show-next-image')
+						.hide();
+				} else if (counter_current === 1) {
+					$('#show-previous-image')
+						.hide();
+				}
+			}
+
+			/**
+			 *
+			 * @param setIDs        Sets IDs when DOM is loaded. If using a PHP counter, set to false.
+			 * @param setClickAttr  Sets the attribute for the click handler.
+			 */
+
+			function loadGallery(setIDs, setClickAttr) {
+				let current_image,
+					selector,
+					counter = 0;
+
+				$('#show-next-image, #show-previous-image')
+					.click(function () {
+						if ($(this)
+							.attr('id') === 'show-previous-image') {
+							current_image--;
+						} else {
+							current_image++;
+						}
+
+						selector = $('[data-image-id="' + current_image + '"]');
+						updateGallery(selector);
+					});
+
+				function updateGallery(selector) {
+					let $sel = selector;
+					current_image = $sel.data('image-id');
+					$('#image-gallery-title')
+						.text($sel.data('title'));
+					$('#image-gallery-image')
+						.attr('src', $sel.data('image'));
+					disableButtons(counter, $sel.data('image-id'));
+				}
+
+				if (setIDs == true) {
+					$('[data-image-id]')
+						.each(function () {
+							counter++;
+							$(this)
+								.attr('data-image-id', counter);
+						});
+				}
+				$(setClickAttr)
+					.on('click', function () {
+						updateGallery($(this));
+					});
+			}
+		});
+
+		// build key actions
+		$(document)
+			.keydown(function (e) {
+				switch (e.which) {
+					case 37: // left
+						if ((modalId.data('bs.modal') || {})._isShown && $('#show-previous-image').is(":visible")) {
+							$('#show-previous-image')
+								.click();
+						}
+						break;
+
+					case 39: // right
+						if ((modalId.data('bs.modal') || {})._isShown && $('#show-next-image').is(":visible")) {
+							$('#show-next-image')
+								.click();
+						}
+						break;
+
+					default:
+						return; // exit this handler for other keys
+				}
+				e.preventDefault(); // prevent the default action (scroll / move caret)
+			});
+	</script>
+
+
+	{% include 'account/snippets/cart_add_product.html'%}
+	{% include 'account/snippets/cart_remove_product.html'%}
+	{% include 'account/snippets/set_counter.html' %}
+	{% include 'product/snippets/product_add_review.html' %}
+	{% include 'product/snippets/product_delete_review.html' %}
+
+
+	{% endblock %}

@@ -1,0 +1,94 @@
+{% extends 'shop_app/base.html' %}
+
+{% block content %}
+<div class="container-fluid" style="padding-top: 100px;">
+    <div class="row">
+        <div class="col-md-3">
+        </div>
+        <div class="col-md-6" style="background-color: white;">
+            <h1 style="text-align: center;">New orders</h1>
+            <table class="table table-bordered" style="margin-top: 20px;">
+                {% if paginated_orders %}
+                <thead>
+                    <tr>
+                        <th>
+                            Order ID
+                        </th>
+                        <th>
+                            Date of placing the order
+                        </th>
+                        <th>
+                            Details
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in paginated_orders %}
+                    <tr>
+                        <td>
+                            {{order.order.id}}
+                        </td>
+                        <td>
+                            {{order.order.timestamp}}
+                        </td>
+                        <td>
+                            <a href="{% url 'management:details' order_id=order.order.id status=1 %}"><button
+                                    type="button" class="btn btn-outline-success btn-sm">
+                                    See details
+                                </button></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <p>No orders</p>
+                    {% endif %}
+                </tbody>
+            </table>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12 d-flex justify-content-center" style="padding-top: 15px;">
+                        <nav>
+                            <ul class="pagination">
+                                {% if paginated_orders.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1">&laquo First</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link"
+                                        href="?page={{paginated_orders.previous_page_number}}">Previous</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#">&laquo First</a>
+                                </li>
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#">Previous</a>
+                                </li>
+                                {% endif %}
+                                {% if paginated_orders.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{paginated_orders.next_page_number}}">Next</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{paginated_orders.paginator.num_pages}}">Last
+                                        &raquo</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#">Next</a>
+                                </li>
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#">Last &raquo</a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+        </div>
+    </div>
+</div>
+{% endblock %}

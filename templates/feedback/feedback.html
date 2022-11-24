@@ -1,0 +1,46 @@
+{% extends 'shop_app/base.html' %}
+
+
+{% block content %}
+<div class="container-fluid" style="padding-top: 100px;">
+	<div class="row">
+		<div class="col-md-3">
+		</div>
+		<div class="col-md-6">
+			<div id="feedback">
+				<h1 style="text-align: center; padding-bottom:25px">Contact</h1>
+				<form method="POST">{% csrf_token%}
+					<select class="custom-select select_custom" data-filter="subject" name="subject" id="subject">
+						<option selected hidden>Category</option>
+						<option value="Question">Question</option>
+						<option value="Issue">Issue</option>
+						<option value="Feedback">Feedback</option>
+					</select>
+					<textarea style="margin-top: 25px; width:100%; min-height: 100px;" oninput="auto_grow(this)"
+						rows="2" cols="100" placeholder="Your message..." name="message"></textarea>
+					{% for field in form %}
+					<p>
+						{% for error in field.errors %}
+						<p style="color: red">{{ error }}</p>
+						{% endfor %}
+					</p>
+					{% endfor %}
+					<button type="submit" class="btn btn-outline-success">
+						Send
+					</button>
+				</form>
+			</div>
+		</div>
+		<div class="col-md-3">
+		</div>
+	</div>
+</div>
+
+<script>
+	//Textarea auto height grow
+	function auto_grow(element) {
+		element.style.height = "5px";
+		element.style.height = (element.scrollHeight) + "px";
+	}
+</script>
+{% endblock %}

@@ -1,0 +1,144 @@
+{% extends 'shop_app/base.html' %}
+
+{% block content %}
+
+
+<style type="text/css">
+	input:disabled {
+		background: #dddddd;
+	}
+</style>
+
+<div class="container-fluid" style="margin-top: 100px;">
+	<div class="row">
+		<div class="col-md-1">
+		</div>
+		<div class="col-md-5">
+			<h3 class="text-center">
+				Add new address
+			</h3>
+			<form role="form" method="post">{% csrf_token %}
+				<div class="form-group">
+
+					<label for="inputAddress1">
+						Address1
+					</label>
+					<input type="text" class="form-control" id="inputAddress1" name="address1" required />
+				</div>
+				<div class="form-group">
+
+					<label for="inputAddress2">
+						Address2
+					</label>
+					<input type="text" class="form-control" id="inputAddress2" name="address2" />
+				</div>
+				<div class="form-group">
+
+					<label for="inputzipcode">
+						zip-code / Post code
+					</label>
+					<input type="text" class="form-control" id="inputZipcode" name="zip_code" required />
+				</div>
+				<div class="form-group">
+
+					<label for="inputCity">
+						City
+					</label>
+					<input type="text" class="form-control" id="inputCity" name="city" required />
+				</div>
+				<div class="form-group">
+					<label for="inputCountry">
+						Country
+					</label>
+					<input type="text" class="form-control" id="inputCountry" name="country" required />
+
+
+				</div>
+
+				{% for field in form %}
+				<p>
+					{% for error in field.errors %}
+					<p style="color: red">{{ error }}</p>
+					{% endfor %}
+				</p>
+				{% endfor %}
+				{% if form.non_field_errors %}
+				<div style="color: red">
+					<p>{{form.non_field_errors}}</p>
+				</div>
+
+				{% endif %}
+
+
+				<button type="submit" class="btn btn-outline-primary" id="add-address">
+					+ Add
+				</button>
+			</form>
+		</div>
+		<div class="col-md-1">
+		</div>
+		<div class="col-md-4">
+			<h3 class="text-center">
+				My addresses {{addresses|length}}/4
+			</h3>
+			<div class="row">
+				{% if not addresses %}
+				<div style="margin: auto; padding-top: 20px;">
+					<p>No addresses :C</p>
+				</div>
+				{% else %}
+				{% for address in addresses %}
+				<div class="col-md-8">
+					<address class="button">
+						<strong>{{address.country}}</strong><br />{{address.address1}}
+						{{address.city}}<br />{%if address.address2 %} {{address.address2}} <br />{% endif %} Zip / Post
+						code: {{address.zip_code}}
+					</address>
+				</div>
+				<div class="col-md-4" style="text-align: center; padding-top: 50px;">
+					<button type="button" class="btn btn-outline-danger "
+						onclick="removeAddress('{{address.id}}', refresh)">Delete <i class="material-icons"
+							style="font-size:15px;">cancel</i></button>
+				</div>
+				{% endfor %}
+				{% endif %}
+			</div>
+		</div>
+		<div class="col-md-1">
+		</div>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+	//Refresh the page
+	function refresh() {
+		location.reload();
+	}
+
+	//Disable address inputs when user have 4 addresses already
+	function disableInput(addressNumber) {
+		let inputs = ["inputAddress1", "inputAddress2", "inputZipcode", "inputCity", "inputCountry"]
+		console.log(inputs)
+		console.log('{{addresses|length}}')
+		if (addressNumber == "4") {
+			inputs.forEach(function (input) {
+				let i = document.getElementById(input)
+				i.disabled = "disabled"
+				console.log('disabled')
+			})
+			button = document.getElementById('add-address')
+			button.classList.add('disabled')
+			button.type = "button"
+		}
+	}
+
+	// Call function
+	disableInput("{{addresses|length}}")
+</script>
+
+
+{% include 'account/snippets/remove_address.html' %}
+{% include 'account/snippets/set_counter.html' %}
+
+{% endblock %}

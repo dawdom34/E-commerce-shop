@@ -1,0 +1,50 @@
+{% extends 'shop_app/base.html' %}
+
+{% block content %}
+<div class="container-fluid" style="margin-top: 100px;">
+	<div class="row">
+		<div class="col-md-4">
+		</div>
+		<div class="col-md-4">
+			<form role="form" method="post">{% csrf_token %}
+				<div class="form-group">
+
+					<label for="email">
+						Email address
+					</label>
+					<input type="email" class="form-control" id="email" name="email" />
+				</div>
+				<div class="form-group">
+
+					<label for="password">
+						Password
+					</label>
+					<input type="password" class="form-control" id="password" name="password" />
+				</div>
+
+				{% for field in login_form %}
+				<p>
+					{% for error in field.errors %}
+					<p style="color: red">{{ error }}</p>
+					{% endfor %}
+				</p>
+				{% endfor %}
+				{% if login_form.non_field_errors %}
+				<div style="color: red">
+					<p>{{login_form.non_field_errors}}</p>
+				</div>
+				{% endif %}
+
+				<button type="submit" class="btn btn-primary">
+					Login
+				</button>
+			</form>
+			<div class="d-flex flex-column my-4">
+				<a class="m-auto" href="{% url 'password_reset' %}">Forgot password?</a>
+			</div>
+		</div>
+		<div class="col-md-4">
+		</div>
+	</div>
+</div>
+{% endblock %}

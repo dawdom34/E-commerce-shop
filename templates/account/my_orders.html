@@ -1,0 +1,65 @@
+{% extends 'shop_app/base.html' %}
+
+{% block content %}
+<div class="container-fluid" style="padding-top: 100px;">
+	<div class="row">
+		<div class="col-md-3">
+		</div>
+		<div class="col-md-6 shadow" style="background-color: white;">
+			<div style="text-align: center;">
+				<h3 class="text-center">My orders</h3>
+			</div>
+			<table class="table table-bordered" style="margin-top: 20px;">
+				{% if orders_with_status %}
+				<thead>
+					<tr>
+						<th>
+							Order ID
+						</th>
+						<th>
+							Date
+						</th>
+						<th>
+							Status
+						</th>
+						<th>
+							Details
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for order in orders_with_status %}
+					<tr class="{% if order.1 == 'Collecting an items' %}table-active
+						{% elif order.1 == 'Waiting for shipment' %}table-active
+						{% elif order.1 == 'Shipped' %}table-warning
+						{% else %}table-success{% endif %}">
+						<td>
+							{{order.0.id}}
+						</td>
+						<td>
+							{{order.0.timestamp}}
+						</td>
+						<td>
+							{{order.1}}
+						</td>
+						<td>
+							<a href="{% url 'account:order_details' order_id=order.0.id %}"><button type="button"
+									class="btn btn-outline-success btn-sm">
+									See details
+								</button></a>
+						</td>
+					</tr>
+					{% endfor %}
+					{% else %}
+					<p>You have no orders</p>
+					{% endif %}
+				</tbody>
+
+			</table>
+		</div>
+		<div class="col-md-3">
+		</div>
+	</div>
+</div>
+{% include 'account/snippets/set_counter.html'%}
+{% endblock %}

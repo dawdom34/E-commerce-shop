@@ -1,0 +1,246 @@
+{% extends 'shop_app/base.html' %}
+
+{% block content %}
+
+
+<style type="text/css">
+  a {
+    color: black
+  }
+
+  a:hover {
+    text-decoration: none;
+    color: black;
+  }
+
+  .select_custom {
+    width: 20%;
+    outline-color: rgb(35, 34, 34);
+    outline-width: 1px;
+    outline-style: outset;
+  }
+
+  .btn_custom {
+    background-color: white;
+    color: black;
+    width: 20%;
+    outline-color: grey;
+    outline-width: 0.5px;
+    outline-style: outset;
+  }
+
+  .btn_custom:hover {
+    background-color: white;
+    color: black;
+    cursor: cell;
+  }
+
+  .drop:hover {
+    background-color: white;
+  }
+
+  .hide {
+    display: none;
+  }
+</style>
+
+
+<div class="container-fluid">
+  <div class="row" style="padding-top:100px;">
+    <div class="col-md-2">
+    </div>
+    <!-- Filters section -->
+    <div class="col-md-8 shadow"
+      style="background-color: white; border-radius:3px; padding-bottom: 14px;text-align: center;">
+      <h2 style="text-align: center;">Filters</h2><br>
+      <form method="post">{% csrf_token %}
+        <select class="custom-select select_custom filter" data-filter="category" name="category" id="category"
+          onclick="resetFilters()">
+          <option selected class="hide">
+            {% if form.initial.category%}{{form.initial.category}}{% else %}{{category}}{% endif %} </option>
+          <option value="T-shirts">T-shirts</option>
+          <option value="Shirts">Shirts</option>
+          <option value="Sweatshirts">Sweatshirts</option>
+          <option value="Sweaters">Sweaters</option>
+          <option value="Coats">Coats</option>
+          <option value="Jeans">Jeans</option>
+          <option value="Shorts">Shorts</option>
+          <option value="Pants">Pants</option>
+        </select>
+        <select class="custom-select select_custom filter" data-filter="size" name="size">
+          <option selected class="hide" id="size">
+            {% if form.initial.size %}{{form.initial.size}}{% else %}{{size}}{% endif %}</option>
+          {% if size and size != "Size" and size != "All sizes" %}
+          <option value="All sizes">All sizes</option>
+          {% endif %}
+          <option value="XS">XS</option>
+          <option value="S">S</option>
+          <option value="M">M</option>
+          <option value="L">L</option>
+          <option value="XL">XL</option>
+          <option value="XXL">XXL</option>
+          <option value="XXXL">XXXL</option>
+        </select>
+        <select class="custom-select select_custom filter" data-filter="gender" name="gender">
+          <option selected class="hide" id="gender">
+            {% if form.initial.gender %}{{form.initial.gender}}{% else %}{{gender}}{% endif %}</option>
+          {% if gender and gender != 'Gender' and gender != 'All genders' %}
+          <option value="All genders">All genders</option>
+          {% endif %}
+          <option value="Man">Man</option>
+          <option value="Woman">Woman</option>
+        </select>
+        <select class="custom-select select_custom filter" data-filter="price" name="price">
+          <option selected class="hide" id="price">
+            {% if form.initial.price %}{{form.initial.price}}{% else %}{{price}}{% endif %}</option>
+          {% if price and price != 'Price' and price != 'All prices' %}
+          <option value="All prices">All prices</option>
+          {% endif %}
+          <option value="50 or less">50 or less</option>
+          <option value="50 to 100">50 to 100</option>
+          <option value="100 to 150">100 to 150</option>
+          <option value="150 or more">150 or more</option>
+        </select>
+        <button type="submit" class="btn btn-outline-primary" style="width: 19%; margin-top: 15px;">
+          Apply
+        </button>
+      </form>
+    </div>
+    <div class="col-md-2">
+    </div>
+  </div>
+</div>
+
+
+<div class="row" style="padding-top: 75px; width:100%; padding-left: 2rem;">
+  <div class="col-md-2"></div>
+  <div class="col-md-8">
+    <ul class="list-group shadow">
+      {% for product in paginated %}
+      <a href="{% url 'shop:details' product_id=product.id %}">
+        <li class="list-group-item">
+          <!-- Custom content-->
+          <div class="media align-items-lg-center flex-column flex-lg-row p-3">
+            <div class="media-body order-2 order-lg-1">
+              <h5 class="mt-0 font-weight-bold mb-2">{{product.product.name}}</h5>
+              <p class="font-italic text-muted mb-0 small">{{product.product.description}}</p>
+              <div class="d-flex align-items-center justify-content-between mt-3">
+                <h6 class="font-weight-bold my-2">${{product.product.price}}</h6>
+                <div style="padding-top: 10px;">
+                  <p style="">Aviable sizes:</p>
+                  {% for x in product.sizes.all %}
+                  <p style="display: inline-block; border: 1px solid grey; width:40px">{{x.size}}</p>
+                  {% endfor %}
+                </div>
+                <div style="padding-top: 10px;">
+                  <p>Aviable colors:</p>
+                  {% for x in product.colors.all %}
+                  <p
+                    style="background-color: {{x.color}}; display: inline-block; width: 40px; height: 23px; border: 1px solid grey;">
+                  </p>
+                  {% endfor %}
+                </div>
+              </div>
+            </div><img src="{{product.product.main_image.url}}" alt="Generic placeholder image" width="200"
+              class="ml-lg-5 order-1 order-lg-2">
+
+          </div>
+          <!-- End -->
+        </li>
+      </a>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="col-md-2"></div>
+</div>
+<!--Current page number / usage in js to highlight number in pagination-->
+<p id="paginated_number" style="display:none;">{{current_number}}</p>
+{% if page_numbers|length > 1 %}
+<!--Numbers of pages-->
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12 d-flex justify-content-center" style="padding-top: 15px;">
+      <nav>
+        <ul class="pagination">
+          {% if paginated.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page=1">&laquo First</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{paginated.previous_page_number}}">Previous</a>
+          </li>
+          {% else %}
+          <li class="page-item disabled">
+            <a class="page-link" href="#">&laquo First</a>
+          </li>
+          <li class="page-item disabled">
+            <a class="page-link" href="#">Previous</a>
+          </li>
+          {% endif %}
+
+          <!--Display numbers of pages-->
+          {% for i in page_numbers %}
+          <li class="page-item" id="{{forloop.counter}}"><a class="page-link" href="?page={{forloop.counter}}">
+              {{forloop.counter}}</a>
+          </li>
+          {% endfor %}
+
+          {% if paginated.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{paginated.next_page_number}}">Next</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{paginated.paginator.num_pages}}">Last &raquo</a>
+          </li>
+          {% else %}
+          <li class="page-item disabled">
+            <a class="page-link" href="#">Next</a>
+          </li>
+          <li class="page-item disabled">
+            <a class="page-link" href="#">Last &raquo</a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+{% endif %}
+<script type="text/javascript">
+  function refresh() {
+    location.reload();
+  }
+
+
+  // Highlighs current number page
+  var num = null
+  try {
+    // Get current page from element
+    num = document.getElementById("paginated_number").innerHTML
+    // Get element with this number in pagination
+    p = document.getElementById(num)
+    // Add bootstrap class to highlight number
+    p.classList.add('active')
+  } catch {
+    console.log('no pages')
+  }
+
+  // Change category in url
+  function resetFilters() {
+    // Category send from backend
+    var last_category = "{{category}}"
+    // Current selected category
+    var current_category = document.getElementById('category').value
+    // If they are different, reset filters
+    if (last_category != current_category) {
+      window.location.replace(`/filtered/${current_category}/`)
+    }
+  }
+</script>
+
+
+{% include 'account/snippets/cart_add_product.html'%}
+{% include 'account/snippets/cart_remove_product.html'%}
+{% include 'account/snippets/set_counter.html' %}
+
+{% endblock %}

@@ -1,0 +1,36 @@
+<script type="text/javascript">
+	function addProduct(id, quantity, color, size, uiUpdateFunction, user ){
+
+		payload = {
+			"csrfmiddlewaretoken": "{{ csrf_token }}",
+			"product_id": id,
+			"quantity": quantity,
+			"color": color,
+			"size": size,
+			"user": user,
+		}
+		$.ajax({
+			type: 'POST',
+			dataType: "json",
+			url: "{% url 'account:cart_add_product' %}",
+			data: payload,
+			timeout: 5000,
+			success: function(data) {
+				console.log("SUCCESS", data)
+				if(data['response'] == "Product added."){
+					// ui is updated
+				}
+				else if(data['response'] != null){
+					alert(data['response'])
+				}
+			},
+			error: function(data) {
+				console.error("ERROR...", data)
+				//alert("Something went wrong.")
+			},
+			complete: function(data){
+				uiUpdateFunction()
+			}
+		});
+	}
+</script>

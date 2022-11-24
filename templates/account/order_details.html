@@ -1,0 +1,235 @@
+{% extends 'shop_app/base.html' %}
+{% load static %}
+{% load mathfilters %}
+{% block content %}
+<style type="text/css">
+    .container-fluid {
+        margin-top: 70px
+    }
+
+    .card-body {
+        -ms-flex: 1 1 auto;
+        flex: 1 1 auto;
+        padding: 1.40rem
+    }
+
+    .img-sm {
+        width: 80px;
+        height: 80px
+    }
+
+    .itemside .info {
+        padding-left: 15px;
+        padding-right: 7px
+    }
+
+    .table-shopping-cart .price-wrap {
+        line-height: 1.2
+    }
+
+    .table-shopping-cart .price {
+        font-weight: bold;
+        margin-right: 5px;
+        display: block
+    }
+
+    .text-muted {
+        color: #969696 !important
+    }
+
+    a {
+        text-decoration: none !important
+    }
+
+    .card {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        min-width: 0;
+        word-wrap: break-word;
+        background-color: #fff;
+        background-clip: border-box;
+        border: 1px solid rgba(0, 0, 0, .125);
+        border-radius: 0px
+    }
+
+    .itemside {
+        position: relative;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        width: 100%
+    }
+
+    .dlist-align {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex
+    }
+
+    [class*="dlist-"] {
+        margin-bottom: 5px
+    }
+
+    .coupon {
+        border-radius: 1px
+    }
+
+    .price {
+        font-weight: 600;
+        color: #212529
+    }
+
+    .btn.btn-out {
+        outline: 1px solid #fff;
+        outline-offset: -5px
+    }
+
+    .btn-main {
+        border-radius: 2px;
+        text-transform: capitalize;
+        font-size: 15px;
+        padding: 10px 19px;
+        cursor: pointer;
+        color: #fff;
+        width: 100%
+    }
+
+    .btn-light {
+        color: #ffffff;
+        background-color: #F44336;
+        border-color: #f8f9fa;
+        font-size: 12px
+    }
+
+    .btn-light:hover {
+        color: #ffffff;
+        background-color: #F44336;
+        border-color: #F44336
+    }
+
+    .btn-apply {
+        font-size: 11px
+    }
+</style>
+<div class="container-fluid">
+    <div class="row">
+        <aside class="col-lg-9">
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table table-borderless table-shopping-cart">
+                        {% if total_price == 0 %}
+                        <h2 style="text-align: center; padding-top: 15px;">Nothing there</h2>
+                        {% else %}
+                        <thead class="text-muted">
+                            <tr class="small text-uppercase">
+                                <th scope="col">Product</th>
+                                <th scope="col" width="120">Quantity</th>
+                                <th scope="col" width="120">Price</th>
+                                <th scope="col" class="text-right d-none d-md-block" width="200"></th>
+                            </tr>
+
+                        </thead>
+                        {% endif %}
+                        <tbody>
+                            {% for product in order.products.all %}
+                            <tr>
+                                <td>
+                                    <figure class="itemside align-items-center">
+                                        <div class="aside"><img src="{{product.product.product.main_image.url}}"
+                                                style="width: 100px; height:100px;"></div>
+                                        <figcaption class="info"> <a href="#" class="title text-dark"
+                                                data-abc="true">{{product}}</a>
+                                            <p class="text-muted small" style="text-align: left;">SIZE: {{product.size}}
+                                            </p>
+                                            <p class="text-muted small" style="text-align: left;">COLOR:
+                                                {{product.color}}</p>
+                                        </figcaption>
+                                    </figure>
+                                </td>
+                                <td>
+                                    <p>{{product.quantity}}</p>
+                                </td>
+                                <td>
+                                    <div class="price-wrap"> <var
+                                            class="price">${{product.product.product.price|mul:product.quantity}}</var>
+                                        <small class="text-muted"> ${{product.product.product.price}} each </small>
+                                    </div>
+                                </td>
+
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </aside>
+        <aside class="col-lg-3">
+            {% if coupon_applied %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <p style="padding-top: 10px; font-weight:700">Coupon: {{coupon}} -{{d}}%</p>
+                </div>
+            </div>
+            {% endif %}
+            <div class="card">
+                <div class="card-body">
+                    <dl class="dlist-align">
+                        <dt>Total price:</dt>
+                        <dd class="text-right ml-3">${{total_price}}</dd>
+                    </dl>
+                    <dl class="dlist-align">
+                        <dt>Discount:</dt>
+                        <dd class="text-right text-danger ml-3">- ${{discount}}</dd>
+                    </dl>
+                    <dl class="dlist-align">
+                        <dt>Total:</dt>
+                        <dd class="text-right text-dark b ml-3"><strong>${{price_after_discount}}</strong></dd>
+                    </dl>
+                    <hr>
+                    <dl class="dlist-align">
+                        <dt>Delivery address:</dt>
+                        <dd class="text-center text-dark b ml-3">{{order.address.country}} {{order.address.city}}
+                            <br>{{order.address.address1}} {{order.address.address2}} <br> {{order.address.zip_code}}
+                        </dd>
+                    </dl>
+                    <hr>
+                    <dl class="dlist-align">
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Status
+                                    </th>
+                                    <th>
+                                        Date
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for s in status %}
+                                <tr class="{% if s.status == 'Collecting an items' %}table-active 
+                                        {% elif s.status == 'Waiting for shipment' %}table-active
+                                        {% elif s.status == 'Shipped' %}table-warning
+                                        {% else %}table-success{% endif %}">
+                                    <td>
+                                        {{s.status}}
+                                    </td>
+                                    <td>
+                                        {{s.timestamp}}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </dl>
+
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+{% include 'account/snippets/set_counter.html'%}
+{% endblock %}

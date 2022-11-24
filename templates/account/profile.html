@@ -1,0 +1,161 @@
+{% extends 'shop_app/base.html' %}
+
+{% block content %}
+<style type="text/css">
+	.button {
+		margin-top: 20px;
+		margin-left: 10px;
+	}
+
+	.box {
+		margin-top: 50px;
+		background-color: white;
+		border-radius: 10px;
+	}
+</style>
+
+<div class="container-fluid">
+	<div class="row" style="padding-top: 50px;">
+		<div class="col-md-3">
+		</div>
+		<div class="col-md-6 shadow box">
+			<h3 class="text-center">
+				My profile
+			</h3>
+			<a href="{% url 'account:edit_profile' user_id=request.user.id %}"><button type="button"
+					class="btn btn-outline-primary button">
+					<i class="material-icons" style="font-size:15px">border_color</i> Edit profile
+				</button></a>
+			<dl class="button">
+				<dt>
+					Name
+				</dt>
+				<dd>
+					{{name}}
+				</dd>
+				<dt>
+					Surname
+				</dt>
+				<dd>
+					{{surname}}
+				</dd>
+				<dt>
+					Email
+				</dt>
+				<dd>
+					{{email}}
+				</dd>
+				<dt>
+					Phone number
+				</dt>
+				<dd>
+					{{number}}
+				</dd>
+			</dl>
+		</div>
+		<div class="col-md-3">
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-3">
+		</div>
+		<div class="col-md-6 shadow box">
+			<h3 class="text-center">
+				My addresses
+			</h3>
+			<a href="{% url 'account:address' user_id=request.user.id %}"><button type="button"
+					class="btn btn-outline-primary button">
+					+ Add address <i class="material-icons" style="font-size:15px">home</i>
+				</button></a>
+			<div class="row">
+				{% if addresses %}
+				{% for address in addresses %}
+				<div class="col-md-8">
+					<address class="button">
+						<strong>{{address.country}}</strong><br />{{address.address1}}
+						{{address.city}}<br />{%if address.address2 %} {{address.address2}} <br />{% endif %} Zip / Post
+						code: {{address.zip_code}}
+					</address>
+				</div>
+				<div class="col-md-4" style="text-align: center; padding-top: 60px;">
+					<button type="button" class="btn btn-outline-danger"
+						onclick="removeAddress('{{address.id}}', refresh)">Delete <i class="material-icons"
+							style="font-size:15px;">cancel</i></button>
+				</div>
+				{% endfor %}
+				{% else %}
+				<div style="text-align: center; width: 100%; padding-top:20px; padding-bottom: 20px;">
+					<h4>You have no addresses</h4>
+				</div>
+				{% endif %}
+			</div>
+		</div>
+		<div class="col-md-3">
+		</div>
+	</div>
+	<div class="row" style="padding-bottom: 50px;">
+		<div class="col-md-3">
+		</div>
+		<div class="col-md-6 shadow box">
+			<h3 class="text-center">
+				My orders
+			</h3>
+			<a href="{% url 'account:my_orders' %}"><button type="button"
+					class="btn btn-md btn-outline-primary button {% if not order_with_status %}disabled{%endif%}">
+					<i class="material-icons" style="font-size:20px;">list</i> See details
+				</button></a>
+			<table class="table" style="margin-top: 20px;">
+				{% if order_with_status %}
+				<thead>
+					<tr>
+						<th>
+							Order ID
+						</th>
+						<th>
+							Date
+						</th>
+						<th>
+							Status
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for order in order_with_status %}
+					<tr class="{% if order.1 == 'Collecting an items' %}table-active
+					{% elif order.1 == 'Waiting for shipment' %}table-active
+					{% elif order.1 == 'Shipped' %}table-warning
+					{% else %}table-success{% endif %}">
+						<td>
+							{{order.0.id}}
+						</td>
+						<td>
+							{{order.0.timestamp}}
+						</td>
+						<td>
+							{{order.1}}
+						</td>
+					</tr>
+					{% endfor %}
+					{% else %}
+					<p>You have no orders</p>
+					{% endif %}
+				</tbody>
+
+			</table>
+		</div>
+		<div class="col-md-3">
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	function refresh() {
+		location.reload();
+	}
+</script>
+
+{% include 'account/snippets/set_counter.html'%}
+{% include 'account/snippets/remove_address.html' %}
+
+
+{% endblock %}

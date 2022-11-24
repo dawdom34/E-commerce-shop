@@ -1,0 +1,37 @@
+<script type="text/javascript">
+	function markAsComplete(id, location){
+		payload = {
+			"csrfmiddlewaretoken": "{{ csrf_token }}",
+			"message_id": id,
+		}
+		$.ajax({
+			type: 'POST',
+			dataType: "json",
+			url: "{% url 'feedback:mark_as_complete' %}",
+			data: payload,
+			timeout: 5000,
+			success: function(data) {
+				console.log("SUCCESS", data)
+				if(data['response'] == "Success."){
+					// ui is updated
+				}
+				else if(data['response'] != null){
+					alert(data['response'])
+				}
+			},
+			error: function(data) {
+				console.error("ERROR...", data)
+				//alert("Something went wrong.")
+			},
+			complete: function(data){
+				if(location == 'Question'){
+					window.location.replace('/management/questions/')
+				}else if(location == 'Issue'){
+					window.location.replace('/management/issues/')
+				}else{
+					window.location.replace('/management/feedback/')
+				}
+			}
+		});
+	}
+</script>
