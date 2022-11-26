@@ -26,7 +26,7 @@ E-commerce app made in django
 ![Details](https://user-images.githubusercontent.com/79845962/204012126-75a78bb6-cf49-4c5d-bae4-f64b53c52d8a.jpg)
 ![Cart](https://user-images.githubusercontent.com/79845962/204012131-d94c0825-9a09-4564-8b59-8bce6c00fbfc.jpg)
 ![Order](https://user-images.githubusercontent.com/79845962/204012146-4990a06e-b507-4ff9-ac2f-fdb9102c9e6d.jpg)
-![db](https://user-images.githubusercontent.com/79845962/204012182-e2390feb-ac74-4848-a9f9-f14d16224558.png)
+![db](https://user-images.githubusercontent.com/79845962/204083927-a06bbe10-0700-4459-86a1-8e9b184b461b.png)
 
 ## Setup(Windows)
 1. Create virtual environment and activate it. To do this open cmd and execute commands below
@@ -82,3 +82,4 @@ In standard keys tab you will find two types of keys, publishable key and secret
 ![stripe](https://user-images.githubusercontent.com/79845962/204022434-0d20ed1b-53bb-46f6-8980-fa504f71c972.PNG)
 
 ## Now you're ready to have fun with this app
+
