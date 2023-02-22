@@ -4,46 +4,7 @@
 		font-weight: 400;
 	}
 </style>
-<!--
-<div class="container-fluid">
-	<div class="row">
-		<div class="col-md-12">
-			<nav class="navbar navbar-expand-lg fixed-top" style="background-color:orangered;">
-				<a class="navbar-brand text" href="{% url 'shop:home' %}"> <i class="material-icons">card_giftcard</i> ShoppingCenter</a>
-				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-					
-					
-					<ul class="navbar-nav ml-md-auto">
-						{% if request.user.is_authenticated %}
-						<li class="nav-item active">
-							 <a class="nav-link text" href="{% url 'account:cart' user_id=request.user.id%}">Cart<i class="material-icons" style="font-size:15px">shopping_cart</i><span id="counter"></span></a>
-						</li>
-						<li class="nav-item dropdown">
-							 <a class="nav-link dropdown-toggle text" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown">Account</a>
-							<div class="dropdown-menu dropdown-menu-right text" aria-labelledby="navbarDropdownMenuLink">
-								 <a class="dropdown-item" href="{% url 'account:view' user_id=request.user.id %}">My profile <i class="material-icons" style="font-size:15px">account_circle</i></a> 
-								 <a class="dropdown-item" href="{% url 'account:address' user_id=request.user.id %}">My adresses <i class="material-icons" style="font-size:15px">home</i></a> 
-								 <a class="dropdown-item" href="{% url 'account:my_orders' %}">My orders <i class="material-icons" style="font-size:15px">credit_card</i></a>
-								<div class="dropdown-divider">
-								</div> 
-								<a class="dropdown-item" href="{% url 'logout' %}">Logout <i class="material-icons" style="font-size:15px">exit_to_app</i></a>
-							</div>
-						</li>
-						{% else %}
-						<li class="nav-item active">
-							<a class="nav-link text" href="{% url 'register' %}">Register</a>
-						</li>
-						<li>
-							<a class="nav-link text" href="{% url 'login'%}">Login</a>
-						</li>
-						{% endif %}
-					</ul>
-				</div>
-			</nav>
-		</div>
-	</div>
-</div>
--->
+
 <nav class="navbar navbar-expand-lg " style="background-color: orangered;">
 	<a class="navbar-brand text" href="{% url 'shop:home' %}"><i class="material-icons">card_giftcard</i>
 		ShoppingCenter</a>
